@@ -1,6 +1,9 @@
-const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Post = require("../models/Post");
+const User = require("../models/User");
+const Conversation = require("../models/Conversation");
+const Notification = require("../models/Notification");
 
 exports.registerUser = async (req, res) => {
    const { username, email, password } = req.body;
@@ -31,5 +34,63 @@ exports.loginUser = async (req, res) => {
       res.json({ user, token });
    } catch (err) {
       res.status(500).json({ message: err.message });
+   }
+};
+
+exports.getPosts = async (req, res) => {
+   try {
+      const posts = await Post.find()
+         .populate("user", "username email")
+         .lean();
+
+      // null users filter karo (agar koi purana deleted user ka post bacha ho)
+      const cleanPosts = posts.filter((p) => p.user !== null);
+
+      res.json(cleanPosts);
+   } catch (err) {
+      res.status(500).json({ error: "Failed to fetch posts" });
+   }
+};
+
+
+
+exports.deleteUser = async (req, res) => {
+   try {
+      const userId = req.params.id;
+
+      // Step 1: delete user
+      await User.findByIdAndDelete(userId);
+
+      // Step 2: delete related posts
+      await Post.deleteMany({ user: userId });
+
+      // Step 3: delete related notifications
+      await Notification.deleteMany({ user: userId });
+
+      // Step 4: delete related conversations
+      await Conversation.deleteMany({ participants: userId });
+
+      res.json({ message: "✅ User and related data deleted successfully" });
+   } catch (err) {
+      console.error("Delete user error:", err);
+      res.status(500).json({ error: "Failed to delete user" });
+   }
+};
+
+
+exports.getConversations = async (req, res) => {
+   try {
+      const convs = await Conversation.find({ participants: req.user._id })
+         .populate("participants", "username email")
+         .lean();
+
+      // null users remove karo
+      const cleanConvs = convs.filter(
+         (c) => c.participants.every((p) => p !== null)
+      );
+
+      res.json(cleanConvs);
+   } catch (err) {
+      res.status(500).json({ error: "Failed to fetch conversations" });
    }
 };

@@ -13,26 +13,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // ---------------- Create post ----------------
-// router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
-//    try {
-//       const { content } = req.body;
-//       const image = req.file ? req.file.filename : null;
-
-//       const post = await Post.create({
-//          author: req.user._id,
-//          content,
-//          image,
-//       });
-
-//       res.status(201).json(post);
-//    } catch (err) {
-//       console.error(err);
-//       res.status(500).json({ message: "Server error" });
-//    }
-// });
-
-
-// ---------------- Create post ----------------
 router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
    try {
       const { content } = req.body;
