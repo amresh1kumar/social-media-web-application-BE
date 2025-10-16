@@ -9,6 +9,7 @@
 
 
 const express = require("express");
+const upload = require("../middlewares/ProfileDp");
 const router = express.Router();
 const { registerUser, loginUser } = require("../controllers/authController");
 
@@ -38,7 +39,7 @@ const { registerUser, loginUser } = require("../controllers/authController");
  *       400:
  *         description: User already exists
  */
-router.post("/register", registerUser);
+router.post("/register", upload.single("avatar"), registerUser);
 
 /**
  * @swagger

@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 module.exports = async function (req, res, next) {
    try {
-      console.log("JWT_SECRET:", process.env.JWT_SECRET);
+      // console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
       // 1. Token header se nikalna
       const token = req.header("Authorization")?.split(" ")[1];
@@ -20,7 +20,7 @@ module.exports = async function (req, res, next) {
          return res.status(401).json({ message: "User not found" });
       }
 
-      next(); // ✅ sab thik, aage badho
+      next();
    } catch (err) {
       console.error("Auth middleware error:", err.message);
       res.status(401).json({ message: "Token is not valid" });

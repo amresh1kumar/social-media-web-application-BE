@@ -12,7 +12,7 @@ const userRoutes = require("./routes/users");
 const notificationRoutes = require("./routes/notifications");
 const conversationRoutes = require("./routes/conversations");
 
-// Swagger
+// import Swagger
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("../swagger");
 
@@ -28,6 +28,7 @@ app.set("io", io); // ✅ Access io in REST routes
 // Middlewares
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // ✅ Needed for form-data
 app.use("/uploads", express.static("uploads"));
 
 // Routes
