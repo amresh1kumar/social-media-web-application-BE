@@ -5,21 +5,6 @@ const User = require("../models/User");
 const Conversation = require("../models/Conversation");
 const Notification = require("../models/Notification");
 
-// exports.registerUser = async (req, res) => {
-//    const { username, email, password } = req.body;
-//    try {
-//       const existingUser = await User.findOne({ email });
-//       if (existingUser) return res.status(400).json({ message: "User exists" });
-
-//       const hashedPassword = await bcrypt.hash(password, 10);
-//       const user = await User.create({ username, email, password: hashedPassword });
-
-//       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXP });
-//       res.status(201).json({ user, token });
-//    } catch (err) {
-//       res.status(500).json({ message: err.message });
-//    }
-// };
 
 
 exports.registerUser = async (req, res) => {
@@ -107,7 +92,7 @@ exports.deleteUser = async (req, res) => {
       await User.findByIdAndDelete(userId);
 
       // Step 2: delete related posts
-      await Post.deleteMany({ user: userId });
+      await Post.deleteMany({ author: userId });
 
       // Step 3: delete related notifications
       await Notification.deleteMany({ user: userId });
