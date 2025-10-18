@@ -38,6 +38,7 @@ exports.registerUser = async (req, res) => {
          process.env.JWT_SECRET,
          { expiresIn: process.env.JWT_EXP }
       );
+      
 
       res.status(201).json({
          message: "User registered successfully",
