@@ -89,6 +89,24 @@ router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
  *       500:
  *         description: Server error
  */
+// router.get("/", authMiddleware, async (req, res) => {
+//    const limit = parseInt(req.query.limit) || 20;
+//    const skip = parseInt(req.query.skip) || 0;
+
+//    try {
+//       const posts = await Post.find()
+//          .populate("author", "username avatar")
+//          .sort({ createdAt: -1 })
+//          .skip(skip)
+//          .limit(limit);
+
+//       res.json(posts);
+//    } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Server error" });
+//    }
+// });
+
 router.get("/", authMiddleware, async (req, res) => {
    const limit = parseInt(req.query.limit) || 20;
    const skip = parseInt(req.query.skip) || 0;
@@ -96,6 +114,7 @@ router.get("/", authMiddleware, async (req, res) => {
    try {
       const posts = await Post.find()
          .populate("author", "username avatar")
+         .populate("comments.user", "username avatar")
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit);
@@ -106,6 +125,7 @@ router.get("/", authMiddleware, async (req, res) => {
       res.status(500).json({ message: "Server error" });
    }
 });
+
 
 /**
  * @swagger
@@ -133,8 +153,8 @@ router.get("/", authMiddleware, async (req, res) => {
 router.get("/:id", authMiddleware, async (req, res) => {
    try {
       const post = await Post.findById(req.params.id)
-         .populate("author", "username avatar")
-         .populate("comments.user", "username avatar");
+         .populate("author", "username avat ar")
+         .populate("comments.user", "usernameavatar");
       if (!post) return res.status(404).json({ message: "Post not found" });
       res.json(post);
    } catch (err) {
@@ -166,19 +186,48 @@ router.get("/:id", authMiddleware, async (req, res) => {
  *       500:
  *         description: Server error
  */
+// router.post("/:id/like", authMiddleware, async (req, res) => {
+//    try {
+//       const post = await Post.findById(req.params.id);
+//       if (!post) return res.status(404).json({ message: "Post not found" });
+
+//       const userId = req.user._id.toString();
+//       if (post.likes.includes(userId)) {
+//          post.likes = post.likes.filter((id) => id.toString() !== userId);
+//       } else {
+//          post.likes.push(userId);
+//       }
+
+//       await post.save();
+//       res.json(post);
+//    } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Server error" });
+//    }
+// });
+
 router.post("/:id/like", authMiddleware, async (req, res) => {
    try {
-      const post = await Post.findById(req.params.id);
+      let post = await Post.findById(req.params.id);
       if (!post) return res.status(404).json({ message: "Post not found" });
 
       const userId = req.user._id.toString();
+
       if (post.likes.includes(userId)) {
+         // Unlike
          post.likes = post.likes.filter((id) => id.toString() !== userId);
       } else {
+         // Like
          post.likes.push(userId);
       }
 
       await post.save();
+
+      // ✅ Populate after save
+      post = await Post.findById(req.params.id)
+         .populate("author", "username avatar")
+         .populate("comments.user", "username avatar");
+
       res.json(post);
    } catch (err) {
       console.error(err);
