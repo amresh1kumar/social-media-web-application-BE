@@ -62,9 +62,17 @@ require("./sockets")(io);               // conversations/messages
 require("./sockets/notifications")(io); // notifications
 
 // MongoDB Connection
+// mongoose.connect(process.env.MONGO_URI)
+//    .then(() => console.log("MongoDB connected"))
+//    .catch((err) => console.log("MongoDB error:", err));
+
+
 mongoose.connect(process.env.MONGO_URI)
-   .then(() => console.log("MongoDB connected"))
-   .catch((err) => console.log("MongoDB error:", err));
+   .then(() => {
+      console.log("✅ MongoDB connected successfully");
+      console.log("Connected to DB URI:", process.env.MONGO_URI);
+   })
+   .catch((err) => console.log("❌ MongoDB connection error:", err));
 
 const PORT = process.env.PORT || 5000;
 // server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
