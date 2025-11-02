@@ -27,9 +27,18 @@ app.set("io", io); // ✅ Access io in REST routes
 
 // Middlewares
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(
+//    cors({
+//       origin: "*", // ✅ sab allowed (testing)
+//       credentials: true,
+//    })
+// );
+
 app.use(
    cors({
-      origin: "*", // ✅ sab allowed (testing)
+      origin: ["https://social-media-web-application-fe.onrender.com"], // ✅ your frontend
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
    })
 );
