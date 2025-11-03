@@ -3,6 +3,9 @@ const router = express.Router();
 const multer = require("multer");
 const authMiddleware = require("../middlewares/auth");
 const Post = require("../models/Post");
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
+
 
 // ---------------- Multer setup ----------------
 const storage = multer.diskStorage({
@@ -45,15 +48,50 @@ const upload = multer({ storage });
  *       500:
  *         description: Server error
  */
+
+// this is for local post   
+// router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
+//    try {
+//       const { content } = req.body;
+//       const image = req.file ? req.file.filename : null;
+
+//       let post = await Post.create({
+//          author: req.user._id,
+//          content,
+//          image,
+//       });
+
+//       post = await post.populate("author", "username avatar");
+//       res.status(201).json(post);
+//    } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Server error" });
+//    }
+// });
+
+// this is for cloudinary store
+
 router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
    try {
       const { content } = req.body;
-      const image = req.file ? req.file.filename : null;
+      let imageUrl = null;
 
+      // ✅ Agar image hai to Cloudinary pe upload karo
+      if (req.file) {
+         const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: "social-media-posts", // apni Cloudinary folder ka naam
+         });
+         imageUrl = result.secure_url;
+
+         // ✅ Temporary file ko delete karo
+         fs.unlinkSync(req.file.path);
+      }
+
+      // ✅ Post create karo with Cloudinary image URL
       let post = await Post.create({
          author: req.user._id,
          content,
-         image,
+         image: imageUrl,
       });
 
       post = await post.populate("author", "username avatar");
@@ -63,6 +101,7 @@ router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
       res.status(500).json({ message: "Server error" });
    }
 });
+
 
 /**
  * @swagger
