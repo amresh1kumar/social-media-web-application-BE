@@ -27,14 +27,14 @@ app.set("io", io);
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 // app.use(
 //    cors({
-//       origin: "*", // ✅ sab allowed (testing)
+//       origin: "*",
 //       credentials: true,
 //    })
 // );
 
 app.use(
    cors({
-      origin: ["https://social-media-web-application-fe.onrender.com"], // ✅ your frontend
+      origin: ["https://social-media-web-application-fe.onrender.com"],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
@@ -42,7 +42,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // ✅ Needed for form-data
+app.use(express.urlencoded({ extended: true })); 
 app.use("/uploads", express.static("uploads"));
 
 // Routes
