@@ -23,23 +23,18 @@ app.set("io", io);
 
 
 
-const allowedOrigins = [
-   "http://localhost:3000",
-   "https://social-media-web-application-fe.onrender.com",
-];
+// Middlewares
+// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(
+//    cors({
+//       origin: "*", // ✅ sab allowed (testing)
+//       credentials: true,
+//    })
+// );
 
 app.use(
    cors({
-      origin: function (origin, callback) {
-         // Agar request without origin (like Postman) ho, allow karo
-         if (!origin) return callback(null, true);
-
-         if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-         } else {
-            callback(new Error("Not allowed by CORS"));
-         }
-      },
+      origin: ["https://social-media-web-application-fe.onrender.com"], // ✅ your frontend
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
